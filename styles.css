@@ -1,0 +1,278 @@
+/* --- RESET & CORE STYLES --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #ecebe6; /* SFI Warm Gray paper background */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #003d5b; /* SFI Ming Navy core color */
+}
+
+/* --- CANVAS ARCHITECTURE --- */
+#canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+#main-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  touch-action: none;
+}
+
+#draft-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* --- UNIFORM VERTICAL SIDEBAR --- */
+.toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 56px; /* Narrower width for a tighter vertical fit */
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px; /* Tighter spacing */
+  background-color: #f4f3ef; /* Light warm-gray for comfort contrast */
+  border-right: 1px solid #d4cfc1;
+  padding: 50px 0 20px 0; /* Space for absolute toggle handle */
+  box-shadow: 1px 0 10px rgba(0, 0, 0, 0.02);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Fallback scrolling safety */
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Collapsed Sidebar */
+.toolbar.collapsed {
+  transform: translateX(-56px);
+}
+
+/* Sidebar Toggle Handle */
+.sidebar-toggle {
+  position: absolute;
+  right: -30px; /* Sticks out when collapsed */
+  top: 12px;
+  width: 24px;
+  height: 24px;
+  background-color: #f4f3ef;
+  border: 1px solid #d4cfc1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  z-index: 12;
+  cursor: pointer;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.02);
+}
+
+.sidebar-toggle-icon {
+  color: #003d5b;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toolbar.collapsed .sidebar-toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* --- VERTICAL BUTTONS & GROUPS --- */
+.tool-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.divider {
+  width: 20px;
+  height: 1px;
+  background-color: #d4cfc1;
+  margin: 4px 0;
+  flex-shrink: 0;
+}
+
+/* Uniform Button Bounding Box */
+button {
+  background: transparent;
+  border: 1px solid transparent;
+  outline: none;
+  width: 36px; /* Perfectly uniform square bounding boxes */
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555555;
+  border-radius: 6px; /* Soft-square e-ink casing feel */
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease, transform 0.1s ease;
+  padding: 0;
+}
+
+button svg {
+  display: block;
+}
+
+button:hover:not(.color-btn) { 
+  background-color: rgba(0, 61, 91, 0.06); /* SFI Navy hover */
+  color: #003d5b; 
+}
+
+button:active {
+  transform: scale(0.92);
+}
+
+/* Perfectly Consistent Active State */
+button.active:not(.color-btn) { 
+  background-color: #003d5b; /* Solid SFI Ming Navy */
+  color: #f4f3ef; /* Warm white icon text/svg */
+  border-color: #003d5b;
+}
+
+button:disabled { 
+  opacity: 0.15; 
+  cursor: default; 
+  pointer-events: none;
+}
+
+/* --- COLOR PICKER PRESETS (Vertical Chain) --- */
+.color-presets {
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.color-btn {
+  width: 18px; /* Clean matching circle shapes */
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  box-shadow: none;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.color-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Gap outline ring for active color */
+.color-btn.active {
+  border-color: #f4f3ef; /* Creates whitespace spacing ring */
+  box-shadow: 0 0 0 1.5px currentColor; /* Solid outer outline */
+  transform: scale(1.1);
+}
+
+/* Custom Color Picker Hidden Input & Container Styles */
+.color-picker-container {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#custom-color-picker {
+  display: none !important;
+}
+
+.custom-color-btn {
+  background: conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red);
+  border: 1px solid #d4cfc1;
+  padding: 0;
+  border-radius: 50% !important; /* Force perfect circle */
+}
+
+/* --- SIZE PRESENTS (Visual Dots inside Squares) --- */
+.dot {
+  display: inline-block;
+  background-color: currentColor;
+  border-radius: 50%;
+  transition: transform 0.1s ease;
+}
+
+.dot-fine {
+  width: 3px;
+  height: 3px;
+}
+
+.dot-med {
+  width: 7px;
+  height: 7px;
+}
+
+.dot-thick {
+  width: 13px;
+  height: 13px;
+}
+
+button:hover .dot {
+  transform: scale(1.25);
+}
+
+/* --- EXPORT BUTTONS --- */
+.export-btn {
+  color: #555555;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+/* --- CUSTOM FLOATING TOOLTIPS --- */
+#custom-tooltip {
+  position: fixed;
+  background-color: #003d5b; /* SFI Navy */
+  color: #f4f3ef; /* Warm white */
+  font-size: 9px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 3px;
+  z-index: 100;
+  pointer-events: none;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --- STANDARD LUCIDE ICON STYLING --- */
+.lucide {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2px;
+}

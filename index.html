@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phileas's Minimalist Canvas</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Load Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Custom Tooltip element -->
+  <div id="custom-tooltip" class="hidden"></div>
+
+  <nav class="toolbar">
+    <!-- Collapse Toggle -->
+    <button id="btn-toggle-sidebar" class="sidebar-toggle" onclick="toggleSidebar()" data-tooltip="Toggle Sidebar">
+      <i data-lucide="chevron-left" class="sidebar-toggle-icon"></i>
+    </button>
+
+    <!-- Tools -->
+    <div class="tool-group">
+      <button id="btn-pen" class="tool-btn active" onclick="setTool('pen')" data-tooltip="Pen">
+        <i data-lucide="pencil"></i>
+      </button>
+      <button id="btn-highlighter" class="tool-btn" onclick="setTool('highlighter')" data-tooltip="Highlighter">
+        <i data-lucide="highlighter"></i>
+      </button>
+      <button id="btn-eraser" class="tool-btn" onclick="setTool('eraser')" data-tooltip="Eraser">
+        <i data-lucide="eraser"></i>
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Color Presets -->
+    <div class="tool-group color-presets">
+      <button class="color-btn active" data-color="#003d5b" onclick="setColor('#003d5b')" data-tooltip="Navy Ink" style="background-color: #003d5b;"></button>
+      <button class="color-btn" data-color="#00a9b7" onclick="setColor('#00a9b7')" data-tooltip="Teal Ink" style="background-color: #00a9b7;"></button>
+      <button class="color-btn" data-color="#f5a623" onclick="setColor('#f5a623')" data-tooltip="Gold Ink" style="background-color: #f5a623;"></button>
+      <button class="color-btn" data-color="#3c1053" onclick="setColor('#3c1053')" data-tooltip="Purple Ink" style="background-color: #3c1053;"></button>
+      <button class="color-btn" data-color="#e4002b" onclick="setColor('#e4002b')" data-tooltip="Red Ink" style="background-color: #e4002b;"></button>
+      
+      <!-- Custom Color Picker -->
+      <div class="color-picker-container">
+        <input type="color" id="custom-color-picker" value="#003d5b" onchange="setCustomColor(this.value)">
+        <button id="btn-custom-color" class="color-btn custom-color-btn" onclick="clickCustomColor()" data-color="" data-tooltip="Custom Color"></button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Sizes -->
+    <div class="tool-group size-group">
+      <button id="btn-fine" class="size-btn active" onclick="setSize('fine')" data-tooltip="Fine Width">
+        <span class="dot dot-fine"></span>
+      </button>
+      <button id="btn-med" class="size-btn" onclick="setSize('med')" data-tooltip="Medium Width">
+        <span class="dot dot-med"></span>
+      </button>
+      <button id="btn-thick" class="size-btn" onclick="setSize('thick')" data-tooltip="Thick Width">
+        <span class="dot dot-thick"></span>
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Actions -->
+    <div class="tool-group action-group">
+      <button id="btn-undo" onclick="undo()" disabled data-tooltip="Undo">
+        <i data-lucide="undo"></i>
+      </button>
+      <button id="btn-redo" onclick="redo()" disabled data-tooltip="Redo">
+        <i data-lucide="redo"></i>
+      </button>
+      <button onclick="clearCanvas()" data-tooltip="Clear Canvas">
+        <i data-lucide="trash-2"></i>
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Export -->
+    <div class="tool-group export-group">
+      <button onclick="exportPNG()" class="export-btn" data-tooltip="Export PNG">PNG</button>
+      <button onclick="exportSVG()" class="export-btn" data-tooltip="Export SVG">SVG</button>
+    </div>
+  </nav>
+
+  <div id="canvas-container">
+    <canvas id="main-canvas"></canvas>
+    <canvas id="draft-canvas"></canvas>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
